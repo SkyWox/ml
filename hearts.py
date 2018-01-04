@@ -16,7 +16,7 @@ def makeModel():
     global model, callbacks
     if model != None:
         return
-    inputs = keras.layers.Input(shape=(12, 4))
+    inputs = keras.layers.Input(shape=(1, 4))
 
     output = Flatten()(inputs)
     output = Dense(100, activation='relu')(output)
@@ -50,11 +50,12 @@ suits = ['hrt', 'dia', 'spd', 'clb']
 # ace is high so = 15
 deck = [suit + str(num) for num in range(2, 14)
         for suit in ['hrt', 'dia', 'spd', 'clb']]
-deck2D = np.ones((4, 13), dtype=np.int)
+# to represent deck as 2D array use this:
+# deck2D = np.ones((4, 13), dtype=np.int)
 current_deck = list(deck)
 goes_first = 0
 hands = []
-scores = np.zeros(4)
+scores = np.zeros(4, dtype=np.int)
 
 
 def train():
@@ -120,7 +121,7 @@ def play_trick():
             trick_set.pop(trick_set.index('nul0'))
             suit = trick_set[0][:3]
 
-        if player == 1:
+        if player == 1:  # change to 1 to enable ai
             chosen_card = ai_best_card(trick, player, suit)
         else:
             chosen_card = pick_card(player, suit)
@@ -172,10 +173,10 @@ def winner_collects(trick):
             scores[winner] += 1
 
     print('Player %d now has %d points' % (winner, scores[winner]))
-    all_tricks.append(trick)
-    winner_list = np.zeros(4)
+    all_tricks.append([trick])
+    winner_list = [0, 0, 0, 0]
     winner_list[winner] = scores[winner] - original_score
-    whowon.append(winner_list)
+    whowon.append([winner_list])
     goes_first = winner
 
 
@@ -193,8 +194,8 @@ def cardDemo():
     print(scores)
     print('Who won list:')
     # train()
-    print([y for x in np.array(whowon) for y in x])
-    print([y for x in np.array(all_tricks) for y in x])
+    print([y for x in whowon for y in x])
+    print([y for x in all_tricks for y in x])
 
 
 if __name__ == "__main__":
