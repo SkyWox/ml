@@ -6,7 +6,7 @@ https://hackernoon.com/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4
 
 ## Build Docker Image
 
-`cd` to Dockerfile
+`cd` to Dockerfile `cd KerasDocker`
 
 ```
  docker build .
@@ -16,6 +16,8 @@ https://hackernoon.com/keras-with-gpu-on-amazon-ec2-a-step-by-step-instruction-4
 Then some steps I forget to push it to the docker hub. Look it up and update this readme
 
 ## Networking to Tensorboard:
+
+Start Docker on your machine
 
 Run it, setting up port forwarding:
 

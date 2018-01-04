@@ -50,6 +50,7 @@ suits = ['hrt', 'dia', 'spd', 'clb']
 # ace is high so = 15
 deck = [suit + str(num) for num in range(2, 14)
         for suit in ['hrt', 'dia', 'spd', 'clb']]
+deck2D = np.ones((4, 13), dtype=np.int)
 current_deck = list(deck)
 goes_first = 0
 hands = []
@@ -69,15 +70,15 @@ def train():
 current_game_boards = []
 
 
-def find_next_best_move(trick, suit, player):
+def ai_best_card(trick, suit, player):
     global model
     makeModel()
     hand = valid_cards(trick, suit)
 
-    if len(hands[player]) > 0:
+    if len(hand) > 0:
         best_x = 0
         best_prob_to_win = 0
-        for x in len(hand):
+        for x in range(len(hand)):
             prob_to_win = model.predict(
                 np.array([trick]), batch_size=1, verbose=0)[0]
             if prob_to_win > best_prob_to_win:
@@ -119,7 +120,10 @@ def play_trick():
             trick_set.pop(trick_set.index('nul0'))
             suit = trick_set[0][:3]
 
-        chosen_card = pick_card(player, suit)
+        if player == 1:
+            chosen_card = ai_best_card(trick, player, suit)
+        else:
+            chosen_card = pick_card(player, suit)
         trick[player] = chosen_card
         hands[player].pop(hands[player].index(chosen_card))
         if i == 0:
