@@ -1,6 +1,6 @@
-# docker-keras - Keras in Docker with Python 3 and TensorFlow on CPU
+# docker-keras - Keras in Docker with Python 3 and TensorFlow on GPU
 
-FROM debian:stretch
+FROM gw000/debian-cuda:8.0_6.0
 
 # install debian packages
 ENV DEBIAN_FRONTEND noninteractive
@@ -32,8 +32,8 @@ RUN apt-get update -qq \
 
 RUN pip3 --no-cache-dir install jupyter
 ARG TENSORFLOW_VERSION=1.4.0
-ARG TENSORFLOW_DEVICE=cpu
-ARG TENSORFLOW_APPEND=
+ARG TENSORFLOW_DEVICE=gpu
+ARG TENSORFLOW_APPEND=_gpu
 RUN pip3 --no-cache-dir install https://storage.googleapis.com/tensorflow/linux/${TENSORFLOW_DEVICE}/tensorflow${TENSORFLOW_APPEND}-${TENSORFLOW_VERSION}-cp35-cp35m-linux_x86_64.whl
 
 ARG KERAS_VERSION=2.1.1
