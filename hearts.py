@@ -2,7 +2,7 @@ import numpy as np
 import copy
 from collections import deque
 import keras
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras.layers import Flatten, Dense, Dropout
 
 
@@ -14,18 +14,11 @@ callbacks = []
 
 def makeModel():
     global model, callbacks
-    if model != None:
-        return
-    inputs = keras.layers.Input(shape=(1, 4))
-
-    output = Flatten()(inputs)
-    output = Dense(100, activation='relu')(output)
-    output = Dense(50, activation='relu')(output)
-    output = Dense(20, activation='relu')(output)
-    output = Dense(1, activation='relu', use_bias=False)(output)
-    print(output)
-
-    model = Model(inputs=inputs, outputs=output)
+    model = Sequential()
+    model.add(Dense(input_dim=4, units=40, activation="sigmoid"))
+    model.add(Dense(units=2, activation="linear"))
+    # sgd = optimizers.SGD(lr=0.01, clipvalue=0.5)
+    # model.compile(loss="mse", optimizer=sgd, learning_rate=0.01)
 
     tbCallBack = keras.callbacks.TensorBoard(
         log_dir='./log', histogram_freq=1, write_graph=True, write_images=True,
@@ -81,7 +74,7 @@ def ai_best_card(trick, suit, player):
         best_prob_to_win = 0
         for x in range(len(hand)):
             prob_to_win = model.predict(
-                np.array([trick]), batch_size=1, verbose=0)[0]
+                np.array([card_to_tensor(y) for y in trick]), batch_size=1, verbose=0)[0]
             if prob_to_win > best_prob_to_win:
                 best_x = x
                 best_prob_to_win = prob_to_win
@@ -89,6 +82,20 @@ def ai_best_card(trick, suit, player):
     else:
         print('Player %d is out' % player)
         return 'nul0'
+
+
+def card_to_tensor(card):
+    if card[0:3] == 'nul':
+        return [-1, -1]
+    else:
+        suit_index = {
+            'hrt': 0,
+            'dia': 1,
+            'spd': 2,
+            'clb': 3
+        }[card[0:3]]
+        value = int(card[3])
+        return [suit_index, value]
 
 
 def shuffle_deal():
@@ -163,7 +170,7 @@ def remove_suit(a):
 
 
 def winner_collects(trick):
-    global scores, goes_first
+    global scores, goes_first, all_tricks
     winner = np.argmax([remove_suit(a) for a in trick])
     original_score = scores[winner]
     for i in trick:
@@ -173,7 +180,7 @@ def winner_collects(trick):
             scores[winner] += 1
 
     print('Player %d now has %d points' % (winner, scores[winner]))
-    all_tricks.append([trick])
+    all_tricks += [trick]
     winner_list = [0, 0, 0, 0]
     winner_list[winner] = scores[winner] - original_score
     whowon.append([winner_list])
@@ -194,8 +201,10 @@ def cardDemo():
     print(scores)
     print('Who won list:')
     # train()
-    print([y for x in whowon for y in x])
-    print([y for x in all_tricks for y in x])
+    num_tricks = [[card_to_tensor(x) for x in all_tricks[i]]
+                  for i in range(1, len(all_tricks))]
+    print(num_tricks)
+    print(whowon)
 
 
 if __name__ == "__main__":
