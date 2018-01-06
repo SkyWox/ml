@@ -30,6 +30,7 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN pip3 --no-cache-dir install jupyter
 ARG TENSORFLOW_VERSION=1.4.0
 ARG TENSORFLOW_DEVICE=cpu
 ARG TENSORFLOW_APPEND=
